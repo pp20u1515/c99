@@ -1,0 +1,7 @@
+3
+dog
+2000
+cataaaaaaaaaaaaaaaaaaaaaaa
+500
+snake
+10
