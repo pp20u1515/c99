@@ -74,9 +74,9 @@ int main(int argc, char **argv)
         if (rc == OK && strcmp(argv[1], "o") == 0)
         {
             rc = inversion(&matrix);
-
-            if (rc == OK)
-                print_matrix(matrix);
+            
+            //if (rc == OK)
+                //print_matrix(matrix);
         }
         else
             rc = ARGS_ERROR;

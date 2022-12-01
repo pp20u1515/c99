@@ -7,5 +7,7 @@
 #define FOPEN_ERROR 3
 #define ARGS_ERROR 4
 #define DIMENSION_ERROR 5
+#define TRUE 1
+#define FALSE 0
 
 #endif
