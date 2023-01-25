@@ -1,5 +1,5 @@
 #include "check_mysnprintf.h"
-#include "my_snprintf.c"
+#include "../src/my_snprintf.c"
 
 int main()
 {

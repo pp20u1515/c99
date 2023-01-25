@@ -16,7 +16,7 @@ main_func()
 		# using wc command to count number of words
 		argc=`wc --word < ../../func_tests/data/pos_0${num}_args.txt`
 		
-		if [[ "$argc" -eq 4 ]]; then
+		if [[ "$argc" -eq 3 ]]; then
 			cat ../../func_tests/data/pos_0${num}_args.txt | xargs ../../app.exe
 			
 			rc=$? 
@@ -28,6 +28,30 @@ main_func()
 			fi
 		else
 			echo "pos_0${num}.txt: " "${red_col}"
+		fi
+		
+		echo
+		(( num++ )) #counter increase
+	done
+
+	while [[ "$num" -ge 10 && -e "../../func_tests/data/pos_${num}_args.txt" ]]; do
+		echo "TEST 0${num}:"
+		
+		# using wc command to count number of words
+		argc=`wc --word < ../../func_tests/data/pos_${num}_args.txt`
+		
+		if [[ "$argc" -eq 3 ]]; then
+			cat ../../func_tests/data/pos_${num}_args.txt | xargs ../../app.exe
+			
+			rc=$? 
+			
+			if diff -Z "../../func_tests/data/pos_${num}_out.txt" "../../func_tests/data/out.txt" && [ $rc -eq 0 ]; then 
+				echo "pos_${num}.txt: " "${green_col}"
+			else
+				echo "pos_${num}.txt: " "${red_col}"
+			fi
+		else
+			echo "pos_${num}.txt: " "${red_col}"
 		fi
 		
 		echo

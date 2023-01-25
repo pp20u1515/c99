@@ -1,1 +1,0 @@
-../data/neg_0222_in.txt out.txt

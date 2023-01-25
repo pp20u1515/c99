@@ -3,110 +3,118 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdlib.h>
 
-#define MAX_SIZE 50
+#define NUMBER_OF_DIGITS 32
 
-void fill_buf_string(char *buf, const size_t n, char *string, size_t *index)
+void unsigned_num_to_str(unsigned long num, long unsigned base, char *str)
 {
-	while (*string)
-	{
-		if (buf && n && *index < n)
-		{
-			*buf = *string;
-			buf++;
-		}
-		
-		*index += 1;
-		string++;
-	}
+    unsigned char index = NUMBER_OF_DIGITS;
+    char symb;
+    char buff[NUMBER_OF_DIGITS];
+
+    do
+    {
+        symb = num % base;
+
+        if (symb < 10)
+            symb += 48;
+        else
+            symb += 87;
+
+        buff[--index] = symb;
+        num /= base;
+    }while (num);
+
+    do
+    {
+        *str++ = buff[index++];
+    } while (index < NUMBER_OF_DIGITS);
+
+    *str = '\0';
 }
 
-void fill_buf_hex_num(char *buf, uint32_t hex_num, size_t *size)
+char *num_to_str(long num, long unsigned base)
 {
-	uint32_t quotion = hex_num;
-	int temp;
-	char temp_buf[MAX_SIZE];
-	int index = 0;
-	
-	while (quotion)
-	{
-		temp = quotion % 16;
-			
-		if (temp < 10)
-			temp_buf[index] = 48 + temp;
-		else
-			temp_buf[index] = 87 + temp;
-		
-		index++;
-		*size += 1;
-		quotion /= 16;
-	}
-	index -= 1;
-	
-	for (int i = index; i >= 0; i--)
-	{
-		*buf = temp_buf[i];
-		buf++;
-	}
+    char *buf = calloc(NUMBER_OF_DIGITS, sizeof(char));
+    unsigned_num_to_str((long unsigned int)num, base, buf);
+
+    return buf;
 }
 
-char *return_pointer(char *buf)
+int digit_copy(char *buf, int count, size_t size, long number, long unsigned base)
 {
-	size_t len = strlen(buf);
+    char *temp_buf = num_to_str(number, base);
+    int j = 0;
 
-	while (len)
-	{
-		buf--;
-		len -= 1;
-	}
-	return buf;
+    while (*(temp_buf + j))
+    {
+        if (buf && size && count < size)
+            *(buf + count) = *(temp_buf + j);
+            
+        count++;
+        j++;
+    }
+    free(temp_buf);
+
+    return count; 
+}
+
+size_t copy_string(char *dest, const char *src, size_t src_index, const size_t dest_size)
+{
+    while (*src)
+    {
+        if (dest && dest_size && src_index < dest_size)
+            *(dest + src_index) = *src;
+
+        src_index++;
+        src++;
+    }
+
+    return src_index;
 }
 
 int my_snprintf(char *buf, size_t n, const char *format, ...)
 {
-	va_list vl;
-	size_t cur_size = 0;
-	
-	va_start(vl, format);
-	
-	while (*format)
-	{
-		if (*format == '%')
-		{
-			format++;
-			
-			if (*format == 's')
-			{
-				char *symbol = va_arg(vl, char *);
-				
-				fill_buf_string(buf, n, symbol, &cur_size);
-				format++;
-			}
-			else if (*format == 'x')
-			{
-				uint32_t hex_num = va_arg(vl, uint32_t);
-				
-				fill_buf_hex_num(buf, hex_num, &cur_size);
-				format++;
-			}
-		}
-		else
-		{
-			if (buf && cur_size < n)
-				buf[cur_size] = *format;
-			
-			cur_size++;
-			format++;
-		}
-	}
-	if (buf && n)
-	{
-		if (cur_size < n)
-			buf[cur_size] = '\0';
-		else
-			buf[n - 1] = '\0';
-	}
-	va_end(vl);
-	
-	return cur_size;
+    va_list args;
+    va_start(args, format);
+    size_t count = 0;
+
+    while (*format)
+    {
+        if (*format == '%')
+        {
+            format++;
+            
+            if (*format == 's')
+            {
+                const char *string = va_arg(args, char *);
+                count = copy_string(buf, string, count, n);
+            }
+            else if (*format == 'x')
+            {
+                count = (size_t)digit_copy(buf, count, n, va_arg(args, unsigned), 16);
+            }
+            format++;
+        }
+        else
+        {
+            if (buf && n && count < n)
+                *(buf + count) = *format;
+            
+            format++;
+            count++;
+        }
+    }
+    if (buf && n)
+    {
+        if (count < n)
+            *(buf + count) = '\0';
+        else
+            *(buf + (n - 1)) = '\0';
+    }
+
+    va_end(args);
+    
+    return count;
 }

@@ -20,7 +20,7 @@ obj/my_snprintf.o: $(SRC)my_snprintf.c $(INC)my_snprintf.h
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 obj/check_main.o: $(UNIT_TESTS)check_main.c $(INC)check_mysnprintf.h
-	$(CC) $(CFLAGS) -Isrc -o $@ -c $<
+	$(CC) $(CFLAGS) -o $@ -c $<
 
 obj/check_mysnprintf.o: $(UNIT_TESTS)check_mysnprintf.c $(INC)check_mysnprintf.h
 	$(CC) $(CFLAGS) -o $@ -c $<

@@ -1,0 +1,7 @@
+3
+dog
+200
+cat
+500
+snake
+fish

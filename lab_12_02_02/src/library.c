@@ -1,6 +1,6 @@
 #include "library.h"
 
-ARR_DLL int ARR_DECL fibonacci(int n)
+int fibonacci(int n)
 {
     if (n == 1 || n == 2)
         return 1;
@@ -8,7 +8,7 @@ ARR_DLL int ARR_DECL fibonacci(int n)
     return fibonacci(n - 1) + fibonacci(n - 2);
 }
 
-ARR_DLL void ARR_DECL fill_array(int *arr, const int size)
+void fill_array(int *arr, const int size)
 {
     for (int index = 0; index < size; index++)
     {
@@ -16,12 +16,12 @@ ARR_DLL void ARR_DECL fill_array(int *arr, const int size)
     }
 } 
 
-ARR_DLL void ARR_DECL filter(int *src, const int src_size, int *dest, int *dest_size)
+int filter(int *src, const int size, int *dest)
 {
     int count = 0;
     int flag = 0;
 
-    for (int index_i = 0; index_i < src_size; index_i++)
+    for (int index_i = 0; index_i < size; index_i++)
     {
         flag = 0;
 
@@ -35,5 +35,5 @@ ARR_DLL void ARR_DECL filter(int *src, const int src_size, int *dest, int *dest_
             count++;
         }
     }
-    *dest_size = count;
+    return count;
 }

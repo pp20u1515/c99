@@ -16,11 +16,11 @@ main_func()
 		# using wc command to count number of words
 		argc=`wc --word < ../../func_tests/data/neg_0${num}_args.txt`
 		
-		if [[ "$argc" -eq 4 ]]; then
+		if [[ "$argc" -eq 3 ]]; then
 			cat ../../func_tests/data/neg_0${num}_args.txt | xargs ../../app.exe
 
 			rc=$? 
-
+			
 			if [ $rc -ne 0 ] && diff -Z "../../func_tests/data/neg_0${num}_out.txt" "../../func_tests/data/out.txt"; then 
 				echo "neg_0${num}.txt: " "${green_col}"
 			else

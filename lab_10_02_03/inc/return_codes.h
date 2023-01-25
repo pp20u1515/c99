@@ -1,19 +1,9 @@
 #ifndef RETURN_CODES_H
 #define RETURN_CODES_H
 
-typedef enum
-{
-    out,
-    mul,
-    dev,
-    sqr,
-    none
-} p_mode;
+#define OK 0
+#define ALLOCATE_ERROR 1
+#define DATA_ERROR 2
+#define FOPEN_ERROR 3
 
-typedef enum
-{
-    ok,
-    error
-} error_t;
-
-#endif
+#endif // RETURN_CODES_H

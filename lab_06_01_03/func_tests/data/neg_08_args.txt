@@ -1,1 +1,1 @@
-../data/neg_20_in.txt
+./func_tests/data/neg_20_in.txt

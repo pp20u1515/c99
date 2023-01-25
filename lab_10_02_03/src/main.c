@@ -1,71 +1,32 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
+#include "io_funcs.h"
+#include "return_codes.h"
+#include "struct.h"
 
-#include "../inc/additional_funcs.h"
-#include "../inc/io_funcs.h"
-#include "../inc/list_funcs.h"
-#include "../inc/return_codes.h"
-#include "../inc/struct_funcs.h"
+#define BUFF_LEN 256
 
 int main()
 {
-    list_t *fst;
-    p_mode mode = get_mode(stdin);
-    int numbers[2];
+    get_mode_t mode; // Операция для выполнения
+    int rc = OK; // код возврата
+
+    get_mode(&mode);
 
     switch (mode)
     {
-        case out:
-            if (get_numbers(numbers, 1) == ok)
-            {
-                fst = make_list(numbers[0]);
-                display_list(fst);
-            }
-            else
-                return error;
+        case (OUT):
+            rc = process_out();
             break;
-        case mul:
-            if (get_numbers(numbers, 2) == ok)
-            {
-                int res = numbers[0] * numbers[1];
-                if (res == 0)
-                    return error;
-                else
-                {
-                    fst = make_list(res);
-                    display_list(fst);
-                }
-            }
-            else
-                return error;
+        case (MUL):
+            rc = process_mul();
             break;
-        case dev:
-            if (get_numbers(numbers, 2) == ok)
-            {
-                if (numbers[0] < numbers[1] || numbers[1] == 0)
-                    return error;
-                else
-                {
-                    fst = make_list((int) (numbers[0] / (double) numbers[1]));
-                    display_list(fst);
-                }
-            }
-            else
-                return error;
+        case (DIVIDE):
+            rc = process_div();
             break;
-        case sqr:
-            if (get_numbers(numbers, 1) == ok)
-            {
-                fst = make_list((int) sqrt((double) numbers[0]));
-                display_list(fst);
-            }
-            else
-                return error;
+        case (SQR):
+            rc = process_sqr();
             break;
         default:
-            return error;
+            rc = DATA_ERROR;
     }
-    return ok;
+    return rc;
 }

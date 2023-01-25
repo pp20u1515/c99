@@ -1,54 +1,70 @@
-from tkinter import *
+import tkinter as tk
 import ctypes
 
-lib = ctypes.CDLL('../libapp.dll')
+lib = ctypes.CDLL("app.so")
 
 _py_array = lib.fill_array
-_py_array.argtypes = (ctypes.POINTER(ctypes.c_int))
+_py_array.argtypes = (ctypes.POINTER(ctypes.c_int), ctypes.c_int)
 _py_array.restype = None
 
 _py_array2 = lib.filter
 _py_array2.argtypes = (ctypes.POINTER(ctypes.c_int), ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int))
-_py_array.restype = None
+_py_array.restype = ctypes.c_int
 
 def fill_arr(size):
     dst = (ctypes.c_int * size)()
     _py_array(dst, size)
+    first_output.delete(0, tk.END)
+    first_output.insert(0, list(dst)) 
+
+def py_filterr(nums):
+    size = len(nums)
+    src = (ctypes.c_int * size)(*nums)
+    dst = (ctypes.c_int * size)()
+    dst_len = _py_array2(src, size, dst)
+
+    return list(dst), dst_len
+
+def output_filter(array):
+    string = array.split(' ')
     
-    return list(dst, size) 
+    try:
+        string = list(map(int, string))
+        temp_array, size = py_filterr(string)
+        
+        line = ''
+        count = 0
+        
+        while count < size.value:
+            line += str(temp_array[count]) + ' '
+            count += 1
+            
+        output_2_1.delete(0, tk.END)
+        output_2_1.insert(0, line)
+    except:
+        output_2_1.delete(0, tk.END)
+        output_2_1.insert(0, 'Неправильный ввод!')
 
-def output_filter(nums):
-    src_len = len(nums)
-    dst_len = ctypes.c_int(len(nums))
-    src = (ctypes.c_int * src_len)(*nums)
-    dst = (ctypes.c_int * dst_len.value)()
-    _py_array2(src, src_len, dst, dst_len)
-
-    return list(dst)
-
-window = Tk("lab_12")
+window = tk.Tk()
 window.geometry('500x500+700+300')
 
-first_label = Label(text = "Введите количество чисел Фибоначчи").place(x = 165, y = 64)
-second_label = Label(text = "Результат").place(x = 220, y = 115)
-first_input = Entry(window, justify = RIGHT)
+first_label = tk.Label(text = "Введите количество чисел Фибоначчи").place(x = 165, y = 64)
+second_label = tk.Label(text = "Результат").place(x = 220, y = 115)
+first_input = tk.Entry(window, justify = tk.RIGHT)
 first_input.place(x = 170, y = 90)
-first_output = Entry(window, justify = RIGHT)
+first_output = tk.Entry(window, justify = tk.RIGHT)
 first_output.place(x = 170, y = 135)
 
-thirth_label = Label(text = "Выбрать только первое вхождение каждого числа").place(x = 130, y = 198)
-fourth_label = Label(text = "Введите элементы массива").place(x = 195, y = 234)
-second_input = Entry(window, justify = RIGHT)
+thirth_label = tk.Label(text = "Выбрать только первое вхождение каждого числа").place(x = 130, y = 198)
+fourth_label = tk.Label(text = "Введите элементы массива").place(x = 195, y = 234)
+second_input = tk.Entry(window, justify = tk.RIGHT)
 second_input.place(x = 170, y = 260)
 
-fifth_label = Label(text = "Первый результат").place(x = 120, y = 300)
-output_2_1 = Entry(window, justify = RIGHT)
+fifth_label = tk.Label(text = "Результат").place(x = 120, y = 300)
+output_2_1 = tk.Entry(window, justify = tk.RIGHT)
 output_2_1.place(x = 170, y = 325)
-sixth_label = Label(text = "Второй результат").place(x = 117, y = 360)
-output_2_2 = Entry(window, justify = RIGHT)
-output_2_2.place(x = 170, y = 385)
 
-Button(text = "fill", command = lambda : fill_arr(int(first_input.get()))).place(x = 300, y = 130)
-Button(text = "go", command = lambda : output_filter(second_input.get())).place(x = 300, y = 325)
+tk.Button(text = "fill", command = lambda : fill_arr(int(first_input.get()))).place(x = 350, y = 130)
+tk.Button(text = "go", command = lambda : output_filter(str(second_input.get()))).place(x = 350, y = 325)
 
 window.mainloop()

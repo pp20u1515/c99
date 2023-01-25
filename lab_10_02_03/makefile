@@ -1,50 +1,50 @@
 CC := gcc
-OBJ := ./obj/
-INC := ./inc/
-SRC := ./src/
-FUNC_TESTS := ./func_tests/
-UNIT_TESTS := ./unit_tests/
-CFLAGS := -std=c99 -Wall -Werror -Wpedantic -Wextra -Wfloat-equal -Wredundant-decls -Wvla -pedantic -lm -ls
-LFLAGS := --coverage
+INC := inc/
+SRC := src/
+OBJ := obj/
+UNIT_TESTS := unit_tests/
+FUNC_TESTS := ./func_tests/scripts/
+CFLAGS := -std=c99 -Iinc -g -Wall -Werror -Wpedantic -Wextra -Wfloat-equal -Wfloat-conversion -Wsign-conversion -Wvla 
+LFLAGS := --coverage 
+OBJS := $(OBJ)main.o $(OBJ)list_funcs.o $(OBJ)io_funcs.o $(OBJ)additional_funcs.o
+OBJU := $(OBJ)check_main.o $(OBJ)check_funcs.o
 
-.PHONY: clean release debug
+.PHONY : clean unit func 
 
-release: CFLAGS += -o2 
-release: $(OBJ)release.lastbuildstate app.exe unit_tests.exe
+app.exe: obj $(OBJS)
+	$(CC) $(LFLAGS) -o $@ $(OBJS) -lm
 
-debug: CFLAGS += --coverage
-debug: LFLAGS += -g3
-debug: $(OBJ)debug.lastbuildstate app.exe unit_tests.exe
+obj/main.o: $(SRC)main.c $(INC)struct.h $(INC)io_funcs.h $(INC)return_codes.h
+	$(CC) $(CFLAGS) -o $@ -c $<
 
-app.exe: $(OBJ)main.o $(OBJ)additional_funcs.o $(OBJ)io_funcs.o $(OBJ)list_funcs.o
-	$(CC) $(LFLAGS) -o $@ $^ -lm
+obj/list_funcs.o: $(SRC)list_funcs.c $(INC)list_funcs.h
+	$(CC) $(CFLAGS) -o $@ -c $<
 
-#unit_tests.exe: $(OBJ)check_main.o $(OBJ)check_matrix_operations.o $(OBJ)matrix_operations.o $(OBJ)matrix.o
-#	$(CC) $(LFLAGS) -I$(INC) -o $@ $^ -lcheck -lm
+obj/io_funcs.o: $(SRC)io_funcs.c $(INC)io_funcs.h $(INC)return_codes.h $(INC)list_funcs.h
+	$(CC) $(CFLAGS) -o $@ -c $<
 
-#$(OBJ)check_%.o: $(UNIT_TESTS)check_%.c
-#	$(CC) $(CFLAGS) -c $< -o $@
+obj/additional_funcs.o: $(SRC)additional_funcs.c $(INC)additional_funcs.h $(INC)return_codes.h $(INC)struct.h
+	$(CC) $(CFLAGS) -o $@ -c $< 
 
-$(OBJ)%.o: $(SRC)%.c
-	$(CC) $(CFLAGS) -c $< -o $@
+obj/check_main.o: $(UNIT_TESTS)check_main.c
+	$(CC) $(CFLAGS) -Isrc -o $@ -c $<
 
-$(OBJ)release.lastbuildstate: | dir
-	rm -rf *.exe $(OBJ)*.o $(OBJ)debug.lastbuildstate
-	touch $(OBJ)release.lastbuildstate
+obj/check_funcs.o: $(UNIT_TESTS)check_funcs.c $(INC)check_funcs.h $(INC)io_funcs.h $(INC)return_codes.h $(INC)list_funcs.h $(INC)struct.h 
+	$(CC) $(CFLAGS) -Isrc -o $@ -c $<
 
-$(OBJ)debug.lastbuildstate: | dir
-	rm -rf *.exe $(OBJ)*.o $(OBJ)release.lastbuildstate
-	touch $(OBJ)debug.lastbuildstate
+unit_tests.exe: obj $(OBJU)
+	$(CC) -o $@ $(OBJU) -lcheck #-lsubunit -lm -g
 
-#unit: unit_tests.exe
-#	./unit_tests.exe
+unit: unit_tests.exe
+	./unit_tests.exe
 
-dir:
-	mkdir -p $(OBJ)
+obj:
+	mkdir -p obj
+
+func:
+	cd $(FUNC_TESTS) && bash ./all_scripts.sh
 
 clean :
-	rm -fv *.exe
-	rm -fv $(OBJ)*.o
-	rm -fv $(OBJ)*.gcno
-	rm -fv $(OBJ)*.gcda
-	touch $(OBJ)*.lastbuildstate
+	rm -rf .vscode
+	rm *.exe 
+	rm -fr obj/

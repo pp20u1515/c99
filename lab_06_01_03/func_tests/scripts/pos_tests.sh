@@ -8,19 +8,19 @@ main_func()
 	num=1 # counter
 	green_col=$'\e[32mPASSED\e[0m' # green color
 	red_col=$'\e[31mFAILED\e[0m' # red color
-
-	while [[ "$num" -lt 10 && -e "../data/pos_0${num}_args.txt" ]]; do
+	
+	while [[ "$num" -lt 10 && -e "../../func_tests/data/pos_0${num}_args.txt" ]]; do
 		echo "TEST 0${num}:"
 		
 		# using wc command to count number of words
-		argc=`wc --word < ../data/pos_0${num}_args.txt`
-
+		argc=`wc --word < ../../func_tests/data/pos_0${num}_args.txt`
+		
 		if [[ "$argc" -eq 1 || "$argc" -eq 2 ]]; then
-			cat ../data/pos_0${num}_args.txt | xargs ../../app.exe > ../data/out.txt
-
+			cat ../../func_tests/data/pos_0${num}_args.txt | xargs ../../app.exe > ../../func_tests/data/out.txt
+			
 			rc=$? 
-
-			if diff -Z "../data/pos_0${num}_out.txt" "../data/out.txt" && [ $rc -eq 0 ]; then 
+			
+			if diff -Z "../../func_tests/data/pos_0${num}_out.txt" "../../func_tests/data/out.txt" && [ $rc -eq 0 ]; then 
 				echo "pos_0${num}.txt: " "${green_col}"
 			else
 				echo "pos_0${num}.txt: " "${red_col}"

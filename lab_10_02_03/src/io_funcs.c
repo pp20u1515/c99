@@ -1,50 +1,134 @@
-#include "../inc/io_funcs.h"
+#include "io_funcs.h"
+#include "return_codes.h"
+#include "list_funcs.h"
+#include "additional_funcs.h"
 
 #include <string.h>
+#include <math.h>
 
-void free_node(node_t *node)
+void get_mode(get_mode_t *mode)
 {
-    free(node);
-}
+    char buf[256]; // буффер
 
-void free_list(list_t *list)
-{
-    while (list->head)
-        pop_front(list);
+    scanf("%s", buf);
     
-    free(list);
-}
-
-void display_list(const list_t *list)
-{
-    for (node_t *node = list->head; node; node = node->next)
-        printf("%d ", node->data);
-    puts("L");
-}
-
-error_t get_numbers(int *arr, const size_t count)
-{
-    for (size_t i = 0; i < count; i++)
-        if (fscanf(stdin, "%d", (arr + i)) != 1 || *(arr + i) <= 0)
-            return error;
-    return ok;
-}
-
-p_mode get_mode(FILE *stream)
-{
-    char buf[256];
-    p_mode mode;
-
-    fscanf(stream, "%s", buf);
     if (strcmp(buf, "out") == 0)
-        mode = out;
+        *mode = OUT;
     else if (strcmp(buf, "mul") == 0)
-        mode = mul;
+        *mode = MUL;
     else if (strcmp(buf, "div") == 0)
-        mode = dev;
+        *mode = DIVIDE;
     else if (strcmp(buf, "sqr") == 0)
-        mode = sqr;
+        *mode = SQR;
     else
-        mode = none;
-    return mode;
+        *mode = NONE;
+}
+
+int process_out()
+{
+    size_t num; // входное число
+    int rc = OK; // код возврата
+    node_t *list = NULL; // Структура списка
+
+    if (scanf("%zu", &num) == 1)
+    {
+        list = create_list(num);
+
+        if (list)
+        {
+            print_result(&list);
+            free_list(&list);
+        }
+        else
+            rc = ALLOCATE_ERROR;
+    }
+    else
+        rc = DATA_ERROR;
+
+    return rc;
+}
+
+void print_result(node_t **head)
+{
+    for (node_t *node = *head; node; node = node->next)
+        printf("%d ", node->data);
+    printf("L\n");
+}
+
+int process_mul()
+{
+    size_t first_num, second_num; // две входные числа
+    size_t result; // результат деления двух чисел
+    int rc = OK; // код возврата
+    node_t *list = NULL; // Структура списка
+    
+    if (scanf("%zu%zu", &first_num, &second_num) == 2)
+    {
+        result = first_num * second_num;
+        list = create_list(result);
+
+        if (list)
+        {
+            print_result(&list);
+            free_list(&list);
+        }
+        else
+            rc = ALLOCATE_ERROR;
+    }
+    else
+        rc = DATA_ERROR;
+
+    return rc;
+}
+
+int process_div()
+{
+    size_t first_num, second_num; // две входные числа
+    size_t result; // результат деления двух чисел
+    int rc = OK; // код возврата
+    node_t *list = NULL; // Структура списка
+    
+    if (scanf("%zu%zu", &first_num, &second_num) == 2 && second_num > 0 && first_num > second_num)
+    {
+        result = first_num / second_num;
+        
+        list = create_list(result);
+
+        if (list)
+        {
+            print_result(&list);
+            free_list(&list);
+        }
+        else
+            rc = ALLOCATE_ERROR;
+    }
+    else
+        rc = DATA_ERROR;
+
+    return rc;
+}
+
+int process_sqr()
+{
+    size_t num; // входное число
+    int rc = OK; // код возврата
+    node_t *list = NULL; // Структура списка
+
+    if (scanf("%zu", &num) == 1)
+    {   
+        list = create_list(num);
+
+        if (list)
+        {
+            sqr_num(list);
+            print_result(&list);
+            free_list(&list);
+        }
+        else
+            rc = ALLOCATE_ERROR;
+    }
+    else
+        rc = DATA_ERROR;
+
+    return rc;
 }

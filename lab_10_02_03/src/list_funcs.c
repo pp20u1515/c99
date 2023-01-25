@@ -1,49 +1,70 @@
-#include "../inc/list_funcs.h"
+#include "list_funcs.h"
+#include "additional_funcs.h"
 
-node_t *init_node(data_t val)
+#include <stdlib.h>
+
+#define NOT_PRIME 0
+
+node_t *create_node(const size_t num)
 {
-    node_t *temp = malloc(sizeof(node_t));
+    node_t *node = malloc(sizeof(node_t));
 
-    if (temp)
+    if (node)
     {
-        temp->data = val;
-        temp->next = NULL;
+        node->data = num;
+        node->next = NULL;
     }
-    return temp;
+    return node;
 }
 
-list_t *init_list(node_t *head, node_t *tail)
+node_t *push(node_t *head, node_t *node)
 {
-    list_t *list = malloc(sizeof(list_t));
+    node_t *temp_head = NULL;
 
-    if (list)
+    if (head)
     {
-        list->head = head;
-        list->tail = tail;
+        temp_head = head;
+        
+        for (; temp_head->next; temp_head = temp_head->next);
+
+        temp_head->next = node;
     }
-    return list;
-}
-
-error_t push_back(list_t *list, node_t *new_node)
-{
-    if (new_node == NULL)
-        return error;
-
-    if (list->head == NULL)
-        list->head = list->tail = new_node;
     else
-    {
-        list->tail->next = new_node;
-        list->tail = new_node;
-    }
+        return node;
 
-    return ok;
+    return head;
 }
 
-void pop_front(list_t *list)
+node_t *create_list(size_t num)
 {
-    node_t *temp = list->head;
+    size_t degree = 2, count = 0; // count_dividers
+    node_t *temp_list = NULL; // Структура списка
+    node_t *node = NULL; // Структура одного узла
+
+    while (degree <= num)
+    {
+        count = count_dividers(&num, degree);
     
-    list->head = list->head->next;
-    free_node(temp);
+        if (count || count == 0)
+        {
+            node = create_node(count);
+
+            if (node)
+                temp_list = push(temp_list, node);
+        }
+        while (is_prime(++degree) == NOT_PRIME);
+    }
+    return temp_list;
+}
+
+void free_list(node_t **head)
+{
+    node_t *temp_head = NULL;
+
+    while (*head)
+    {
+        temp_head = (*head)->next;
+        free(*head);
+        *head = temp_head;
+    }
 }

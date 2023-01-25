@@ -3,7 +3,7 @@
 
 int main()
 {
-    system("py main.py");
+    system("python3 main.py");
 
     return 0;
 }

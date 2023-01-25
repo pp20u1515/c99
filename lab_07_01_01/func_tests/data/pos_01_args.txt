@@ -1,1 +1,0 @@
-../data/pos_01_in.txt out.txt f
